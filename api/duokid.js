@@ -1,38 +1,50 @@
 export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "POST only" });
+  }
+
   try {
     const { userText } = JSON.parse(req.body);
 
-    const openaiRes = await fetch("https://api.openai.com/v1/responses", {
+    if (!process.env.OPENAI_API_KEY) {
+      console.error("Brak klucza OPENAI_API_KEY!");
+      return res.status(500).json({ reply: "Server error: missing API key" });
+    }
+
+    const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: [
+        messages: [
           {
             role: "system",
-            content: "You are DuoKid — a friendly assistant for children."
+            content: "You are DuoKid – a friendly voice assistant for children. Respond simply, kindly and clearly."
           },
           {
             role: "user",
             content: userText
           }
-        ]
-      })
+        ],
+      }),
     });
 
     const data = await openaiRes.json();
 
-    const reply =
-      data.output_text ??
-      data.output[0].content ??
-      "I cannot answer now.";
+    if (!data.choices || !data.choices[0].message) {
+      console.error("OpenAI error:", data);
+      return res.status(500).json({ reply: "Server error" });
+    }
 
-    res.status(200).json({ reply });
+    const reply = data.choices[0].message.content || "I cannot answer now.";
+
+    return res.status(200).json({ reply });
+
   } catch (err) {
     console.error("API ERROR:", err);
-    res.status(500).json({ reply: "Server error." });
+    return res.status(500).json({ reply: "Server error" });
   }
 }
