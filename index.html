@@ -1,157 +1,79 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DuoKid</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DuoKid</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(#cfe8ff, #d8ecff);
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-    }
+    <style>
+        body {
+            margin: 0;
+            font-family: "Arial", sans-serif;
+            background: linear-gradient(to bottom, #cfe7ff, #d7e9ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      padding: 20px;
-      text-align: center;
-    }
+        h1 {
+            margin-top: 10px;
+            font-size: 42px;
+            color: #333;
+            font-weight: 700;
+        }
 
-    /* Postać */
-    .duokid-wrapper {
-      position: relative;
-      width: 100%;
-      margin: 0 auto 20px auto;
-    }
+        .hero-img {
+            width: 240px;
+            height: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
 
-    .duokid-img {
-      width: 80%;
-      max-width: 300px;
-      animation: float 4s ease-in-out infinite;
-      filter: drop-shadow(0 10px 25px rgba(0,0,0,0.15));
-    }
+        .chat-box {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
 
-    /* Animacja kołysania */
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
+        .btn {
+            background: #6a7dff;
+            color: white;
+            font-size: 22px;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 40px;
+            margin-top: 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(100, 120, 255, 0.5);
+            transition: 0.2s;
+        }
 
-    h1 {
-      font-size: 38px;
-      margin-top: 10px;
-      color: #333;
-      font-weight: bold;
-    }
-
-    /* Czat */
-    .chat-box {
-      width: 100%;
-      background: #eaf1ff;
-      border-radius: 20px;
-      padding: 15px;
-      height: 300px;
-      overflow-y: auto;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    .msg {
-      margin: 10px 0;
-      padding: 10px 14px;
-      border-radius: 12px;
-      max-width: 80%;
-      text-align: left;
-      display: inline-block;
-      font-size: 16px;
-      line-height: 1.35;
-    }
-
-    .duo {
-      background: #d8ddff;
-      color: #1b1b55;
-    }
-
-    .you {
-      background: #c8f7d0;
-      color: #0f4d1e;
-      margin-left: auto;
-      display: block;
-    }
-
-    /* Mikrofon */
-    .mic-btn {
-      margin-top: 20px;
-      padding: 14px 28px;
-      background: #6c82ff;
-      color: white;
-      font-size: 20px;
-      border-radius: 30px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0,0,255,0.25);
-      transition: 0.2s;
-    }
-
-    .mic-btn:hover {
-      transform: scale(1.05);
-      background: #5a6fee;
-    }
-
-  </style>
+        .btn:hover {
+            transform: scale(1.05);
+            background: #8090ff;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-
-    <div class="duokid-wrapper">
-      <!-- Wstawimy tu gotową grafikę DuoKid -->
-      <img src="duokid.png" class="duokid-img" alt="DuoKid">
-    </div>
+    <!-- OBRAZEK DUOKID -->
+    <img src="duokid.jpeg" alt="DuoKid" class="hero-img" />
 
     <h1>DuoKid</h1>
 
-    <div class="chat-box" id="chat">
-      <div class="msg duo">Dotknij mnie i porozmawiaj ze mną.</div>
+    <div class="chat-box">
+        <p style="font-size: 20px; color: #555;">
+            Dotknij mnie i porozmawiaj ze mną.
+        </p>
     </div>
 
-    <button class="mic-btn" onclick="startVoice()">Porozmawiaj</button>
-
-  </div>
-
-  <script>
-    async function sendToAPI(text) {
-      addMessage(text, "you");
-
-      const res = await fetch("/api/duokid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userText: text })
-      });
-
-      const data = await res.json();
-      addMessage(data.reply || "Błąd odpowiedzi.", "duo");
-    }
-
-    function addMessage(msg, sender) {
-      const chat = document.getElementById("chat");
-      const div = document.createElement("div");
-      div.className = "msg " + sender;
-      div.textContent = msg;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function startVoice() {
-      const text = prompt("Powiedz coś do DuoKid:");
-      if (text) sendToAPI(text);
-    }
-  </script>
+    <button class="btn">Porozmawiaj</button>
 
 </body>
 </html>
