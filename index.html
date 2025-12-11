@@ -29,21 +29,14 @@
         height: 160px;
         margin: 0 auto 20px;
         border-radius: 50%;
-        background: radial-gradient(circle at 40% 40%, #ffffff, #a88bff, #6a40ff);
+        background: radial-gradient(circle, #ffffff, #a88bff, #6a40ff);
         box-shadow: 0 0 40px rgba(140, 80, 255, 0.7);
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.25s;
     }
 
     #eye.active {
         box-shadow: 0 0 60px rgba(0, 255, 140, 1);
-        background: radial-gradient(circle at 40% 40%, #cfffde, #44ff9a, #00c46a);
-    }
-
-    #name {
-        font-size: 28px;
-        font-weight: bold;
-        margin-bottom: 15px;
     }
 
     #chat {
@@ -58,12 +51,6 @@
 
     .duo { color: #0047ff; margin-bottom: 10px; }
     .you { color: #008a2e; margin-bottom: 10px; }
-
-    #hint {
-        margin-top: 20px;
-        font-size: 15px;
-        opacity: 0.8;
-    }
 </style>
 </head>
 
@@ -71,68 +58,4 @@
 
 <div class="container">
     <div id="eye"></div>
-    <div id="name">DUOKID</div>
-
-    <div id="chat"></div>
-
-    <div id="hint">Tap the eye and speak to DuoKid.</div>
-</div>
-
-<script>
-const chat = document.getElementById("chat");
-const eye = document.getElementById("eye");
-
-// ===============================
-// WPROWADŹ SWÓJ KLUCZ API W CUDZYSŁOWIE
-// ===============================
-const OPENAI_API_KEY = "YOUR_OPENAI_KEY_HERE";
-// ===============================
-
-function addMessage(who, text) {
-    const p = document.createElement("div");
-    p.className = who;
-    p.textContent = (who === "duo" ? "Duokid: " : "You: ") + text;
-    chat.appendChild(p);
-    chat.scrollTop = chat.scrollHeight;
-}
-
-// Initial welcome message
-addMessage("duo", "Hi! I'm here. Tap the eye and talk to me.");
-
-// Speech Recognition
-let listening = false;
-let recognition;
-
-if ("webkitSpeechRecognition" in window) {
-    recognition = new webkitSpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-        listening = true;
-        eye.classList.add("active");
-    };
-
-    recognition.onend = () => {
-        listening = false;
-        eye.classList.remove("active");
-    };
-
-    recognition.onerror = () => {
-        addMessage("duo", "Microphone error. Please check permissions.");
-        listening = false;
-        eye.classList.remove("active");
-    };
-
-    recognition.onresult = async (event) => {
-        const text = event.results[0][0].transcript;
-        addMessage("you", text);
-        await askDuokid(text);
-    };
-} else {
-    addMessage("duo", "Your browser does not support voice input.");
-}
-
-// Text-to-Speech
-function speak(text) {
+    <h
