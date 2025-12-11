@@ -1,14 +1,18 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "POST only" });
-  }
-
   try {
-    const { userText } = JSON.parse(req.body);
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "POST only" });
+    }
+
+    // PRAWIDŁOWE pobranie JSON – zgodne z Vercel Serverless
+    const { userText } = req.body;
+
+    if (!userText) {
+      return res.status(400).json({ reply: "Missing userText" });
+    }
 
     if (!process.env.OPENAI_API_KEY) {
-      console.error("Brak klucza OPENAI_API_KEY!");
-      return res.status(500).json({ reply: "Server error: missing API key" });
+      return res.status(500).json({ reply: "Missing API key" });
     }
 
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -22,29 +26,28 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are DuoKid – a friendly voice assistant for children. Respond simply, kindly and clearly."
+            content: "You are DuoKid – a friendly assistant for children.",
           },
           {
             role: "user",
-            content: userText
-          }
+            content: userText,
+          },
         ],
       }),
     });
 
     const data = await openaiRes.json();
 
-    if (!data.choices || !data.choices[0].message) {
-      console.error("OpenAI error:", data);
-      return res.status(500).json({ reply: "Server error" });
+    if (!openaiRes.ok) {
+      console.error("OpenAI Error:", data);
+      return res.status(500).json({ reply: "OpenAI error" });
     }
 
-    const reply = data.choices[0].message.content || "I cannot answer now.";
+    const reply = data.choices?.[0]?.message?.content || "No response.";
 
     return res.status(200).json({ reply });
-
   } catch (err) {
-    console.error("API ERROR:", err);
+    console.error("SERVER ERROR:", err);
     return res.status(500).json({ reply: "Server error" });
   }
 }
