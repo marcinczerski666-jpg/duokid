@@ -58,4 +58,100 @@
 
 <div class="container">
     <div id="eye"></div>
-    <h
+    <h1>DUOKID</h1>
+    <div id="chat"></div>
+    <p>Tap the eye and speak to DuoKid.</p>
+</div>
+
+<script>
+const eye = document.getElementById("eye");
+const chat = document.getElementById("chat");
+
+function addMessage(who, text) {
+    const div = document.createElement("div");
+    div.className = who;
+    div.textContent = (who === "duo" ? "DuoKid: " : "You: ") + text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// Powitanie
+addMessage("duo", "Hi! I'm DuoKid. Tap my eye and talk to me.");
+
+// Rozpoznawanie mowy (Chrome / Edge / Android)
+let listening = false;
+let recognition = null;
+
+if ("webkitSpeechRecognition" in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        listening = true;
+        eye.classList.add("active");
+    };
+
+    recognition.onend = () => {
+        listening = false;
+        eye.classList.remove("active");
+    };
+
+    recognition.onerror = () => {
+        addMessage("duo", "Microphone error. Please check permissions.");
+        listening = false;
+        eye.classList.remove("active");
+    };
+
+    recognition.onresult = async (event) => {
+        const text = event.results[0][0].transcript;
+        addMessage("you", text);
+        await askDuokid(text);
+    };
+} else {
+    addMessage("duo", "Your browser does not support voice input.");
+}
+
+function speak(text) {
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "en-US";
+    speechSynthesis.speak(msg);
+}
+
+async function askDuokid(text) {
+    addMessage("duo", "Thinking...");
+
+    try {
+        const res = await fetch("/api/duokid", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+        });
+
+        const data = await res.json();
+        const reply = data.reply || "I cannot respond right now.";
+
+        addMessage("duo", reply);
+        speak(reply);
+
+    } catch (err) {
+        addMessage("duo", "Error connecting to server.");
+    }
+}
+
+eye.addEventListener("click", () => {
+    if (!recognition) {
+        alert("Speech recognition not supported in this browser.");
+        return;
+    }
+    if (!listening) {
+        recognition.start();
+    } else {
+        recognition.stop();
+    }
+});
+</script>
+
+</body>
+</html>
