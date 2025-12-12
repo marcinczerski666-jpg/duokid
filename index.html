@@ -1,129 +1,20 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DuoKid</title>
+<script>
+  async function fakeReply() {
+    const chat = document.getElementById("chat");
+    chat.innerHTML = "<strong>DuoKid:</strong> Myślę… 🤔";
 
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: "Cześć DuoKid!" })
+      });
+
+      const data = await res.json();
+
+      chat.innerHTML = "<strong>DuoKid:</strong> " + data.reply;
+    } catch (e) {
+      chat.innerHTML = "<strong>DuoKid:</strong> Coś poszło nie tak 😢";
     }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #eaf4ff, #f7fbff);
-      display: flex;
-      justify-content: center;
-      overflow-x: hidden;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 420px;
-      padding: 24px 16px 32px;
-      text-align: center;
-    }
-
-    /* === OBRAZEK === */
-    .avatar-wrapper {
-      width: 260px;
-      height: 260px;
-      margin: 0 auto 12px;
-      border-radius: 24px;
-      background: #e8f3ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 20px 40px rgba(120, 140, 255, 0.25),
-        inset 0 0 0 1px rgba(255,255,255,0.6);
-    }
-
-    .avatar-wrapper img {
-      width: 220px;
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    h1 {
-      margin: 8px 0 16px;
-      font-size: 34px;
-      font-weight: 700;
-      color: #2b2b2b;
-    }
-
-    .bubble {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 18px 16px;
-      font-size: 17px;
-      color: #333;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      margin-bottom: 24px;
-      min-height: 120px;
-      text-align: left;
-    }
-
-    .bubble strong {
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    /* === PRZYCISK === */
-    .talk-btn {
-      width: 100%;
-      height: 56px;
-      border-radius: 28px;
-      border: none;
-      background: linear-gradient(135deg, #6f7bff, #5b67f0);
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(90, 100, 255, 0.45);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      transform: translateZ(0);
-    }
-
-    .talk-btn:active {
-      transform: scale(0.97);
-      box-shadow: 0 6px 16px rgba(90, 100, 255, 0.35);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app">
-
-    <div class="avatar-wrapper">
-      <img src="./duokid.jpeg" alt="DuoKid" />
-    </div>
-
-    <h1>DuoKid</h1>
-
-    <div class="bubble" id="chat">
-      <strong>DuoKid:</strong>
-      Dotknij mnie i porozmawiaj ze mną.
-    </div>
-
-    <button class="talk-btn" onclick="fakeReply()">
-      Porozmawiaj
-    </button>
-
-  </div>
-
-  <script>
-    function fakeReply() {
-      const chat = document.getElementById("chat");
-      chat.innerHTML = "<strong>DuoKid:</strong> Myślę… 🤔";
-      setTimeout(() => {
-        chat.innerHTML = "<strong>DuoKid:</strong> Jestem gotowy! 😊";
-      }, 1200);
-    }
-  </script>
-</body>
-</html>
+  }
+</script>
